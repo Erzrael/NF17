@@ -9,6 +9,16 @@
 		fonction de l'integer donné écrit le type correspondant. 
 */
 
+/* Création des tables */
+
+/* Cette table permet d'avoir tous les identifiant et mdp dans une seule table. 
+A l'aide de trigger, on s'assure qu'elle contienne tous les id et mdp */
+
+CREATE TABLE Comptes (
+	nomUtilisateur VARCHAR(30) PRIMARY KEY,
+	motDePasse VARCHAR(30)
+);
+
 CREATE TABLE Administrateur (
 	nomUtilisateur VARCHAR(30) PRIMARY KEY,
 	motDePasse VARCHAR(30)
@@ -76,18 +86,6 @@ CREATE TABLE Ressource(
 	PRIMARY KEY (contenu, application)
 );	
 
-CREATE VIEW vRessource(identifiant, titre, tarifAbo, tarifAchatSimple, editeur, nomAdministrateur)
-	AS
-	SELECT Contenu.identifiant, Contenu.titre, Contenu.tarifAbo, Contenu.tarifAchatSimple, Contenu.editeur, Contenu.nomAdministrateur 
-	FROM Contenu, Ressource
-	WHERE (Contenu.identifiant=Ressource.application);
-
-CREATE VIEW vApplication (identifiant, titre, tarifAbo, tarifAchatSimple, editeur, nomAdministrateur)
-	AS
-	SELECT Contenu.identifiant, Contenu.titre, Contenu.tarifAbo, Contenu.tarifAchatSimple, Contenu.editeur, Contenu.nomAdministrateur 
-	FROM Contenu, Application
-	WHERE(Contenu.identifiant=Application.contenu);
-
 CREATE TABLE Avis (
 	nomClient VARCHAR(30) REFERENCES Client(nomUtilisateur),
 	application INTEGER REFERENCES Application(contenu),
@@ -149,3 +147,70 @@ CREATE TABLE Abonnement (
 	numCB INTEGER REFERENCES CarteBancaire(numCB),
 	numCP INTEGER REFERENCES CartePrepayee(numCP)
 );
+
+/* Création des vues */
+
+CREATE VIEW vRessource(identifiant, titre, tarifAbo, tarifAchatSimple, editeur, nomAdministrateur)
+	AS
+	SELECT Contenu.identifiant, Contenu.titre, Contenu.tarifAbo, Contenu.tarifAchatSimple, Contenu.editeur, Contenu.nomAdministrateur 
+	FROM Contenu, Ressource
+	WHERE (Contenu.identifiant=Ressource.application);
+
+CREATE VIEW vApplication (identifiant, titre, tarifAbo, tarifAchatSimple, editeur, nomAdministrateur)
+	AS
+	SELECT Contenu.identifiant, Contenu.titre, Contenu.tarifAbo, Contenu.tarifAchatSimple, Contenu.editeur, Contenu.nomAdministrateur 
+	FROM Contenu, Application
+	WHERE(Contenu.identifiant=Application.contenu);
+
+/* Création des triggers */
+
+CREATE OR REPLACE FUNCTION MAdministrateur() RETURNS TRIGGER AS $MAdministrateur$
+	BEGIN
+	    IF (TG_OP = 'DELETE') THEN
+	        DELETE FROM Comptes WHERE nomUtilisateur = OLD.nomUtilisateur;
+	    ELSIF (TG_OP = 'UPDATE') THEN
+	        UPDATE Comptes SET nomUtilisateur = NEW.nomUtilisateur, motDePasse = NEW.motDePasse WHERE nomUtilisateur = OLD.nomUtilisateur;
+	    ELSIF (TG_OP = 'INSERT') THEN
+	        INSERT INTO Comptes VALUES (NEW.nomUtilisateur, NEW.motDePasse);
+	    END IF;
+	    RETURN NULL; -- le résultat est ignoré car il s'agit d'un trigger AFTER
+	END;
+$MAdministrateur$ language plpgsql;
+
+CREATE TRIGGER Maj_Administrateur
+	AFTER INSERT OR UPDATE OF nomUtilisateur, motDePasse OR DELETE ON Administrateur
+	FOR EACH ROW EXECUTE PROCEDURE MAdministrateur();
+
+CREATE OR REPLACE FUNCTION MClient() RETURNS TRIGGER AS $MClient$
+	BEGIN
+	    IF (TG_OP = 'DELETE') THEN
+	        DELETE FROM Comptes WHERE nomUtilisateur = OLD.nomUtilisateur;
+	    ELSIF (TG_OP = 'UPDATE') THEN
+	        UPDATE Comptes SET nomUtilisateur = NEW.nomUtilisateur, motDePasse = NEW.motDePasse WHERE nomUtilisateur = OLD.nomUtilisateur;
+	    ELSIF (TG_OP = 'INSERT') THEN
+	        INSERT INTO Comptes VALUES (NEW.nomUtilisateur, NEW.motDePasse);
+	    END IF;
+	    RETURN NULL; -- le résultat est ignoré car il s'agit d'un trigger AFTER
+	END;
+$MClient$ language plpgsql;
+
+CREATE TRIGGER Maj_Client
+	AFTER INSERT OR UPDATE OF nomUtilisateur, motDePasse OR DELETE ON Client
+	FOR EACH ROW EXECUTE PROCEDURE MClient();
+
+CREATE OR REPLACE FUNCTION MEditeur() RETURNS TRIGGER AS $MEditeur$
+	BEGIN
+	    IF (TG_OP = 'DELETE') THEN
+	        DELETE FROM Comptes WHERE nomUtilisateur = OLD.nomUtilisateur;
+	    ELSIF (TG_OP = 'UPDATE') THEN
+	        UPDATE Comptes SET nomUtilisateur = NEW.nomUtilisateur, motDePasse = NEW.motDePasse WHERE nomUtilisateur = OLD.nomUtilisateur;
+	    ELSIF (TG_OP = 'INSERT') THEN
+	        INSERT INTO Comptes VALUES (NEW.nomUtilisateur, NEW.motDePasse);
+	    END IF;
+	    RETURN NULL; -- le résultat est ignoré car il s'agit d'un trigger AFTER
+	END;
+$MEditeur$ language plpgsql;
+
+CREATE TRIGGER Maj_Editeur
+	AFTER INSERT OR UPDATE OF nomUtilisateur, motDePasse OR DELETE ON Editeur
+	FOR EACH ROW EXECUTE PROCEDURE MEditeur();

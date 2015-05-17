@@ -8,7 +8,7 @@ class Connexion {
 	private $_Password;
 	private $_Lien;
 
-	public function __construct($User = 'lraingev', $Password = 'root', $Host = 'localhost', $Port = 5432, $Dbname = 'test'){ 
+	public function __construct($User = 'lraingev', $Password = 'root', $Host = 'localhost', $Port = 5432, $Dbname = 'nf17'){ 
 	/*
 	Potentiellement rajouter des arguements par défaut comme la base, le host et le port quand on les connaîtra.
 	Constructeur de la classe. On lui passe les identifiants de connexions et il se connecte. 
@@ -37,8 +37,8 @@ class Connexion {
 		$i = 0;
 		$Ressource = pg_query($this->_Lien, $Requete);
 		$TabResultat = array();
-		if (!$Ressource) 
-			echo 'Erreur dans la requête SQL';
+		if (!$Ressource)
+			return 0;
 		else
 		{
 			while ($Ligne = pg_fetch_array($Ressource))
@@ -56,8 +56,8 @@ class Connexion {
     /!\ Execute la requête passée en argument que s'il s'agit d'un UPDATE, DELETE, INSERT. /!\
     */
 		$Ressource = pg_query($this->_Lien, $Requete);
-		if (!$Ressource) 
-			echo 'Erreur dans la requête SQL';
+		if (!$Ressource)
+			return 0;
 		else
 		{
 			$NbAffectee = pg_affected_rows($Ressource);

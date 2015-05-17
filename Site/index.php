@@ -16,6 +16,7 @@
 	     	<div class="jumbotron">
 				<h1>Page d'accueil test</h1>
 				<p>On peut mettre des liens vers toutes les pages ici, en attendant de faire une vraie page d'accueil et tout...</p>
+			</p> <a href="accueil.html"> Connexion </a> </p>
 			</div>
 
 
@@ -25,10 +26,7 @@
 			<p>
 				Extension Postgres 
 
-				<?php
-				/*echo extension_loaded('pgsql') ? 
-				'<span class="label label-primary">trouvée</span> <br>':'<span class="label label-warning">pas trouvée</span><br>';*/
-				
+				<?php				
 				include_once("classes/connexion.php");
 
 				$DB = new Connexion();
