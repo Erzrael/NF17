@@ -35,9 +35,13 @@ class Connexion {
 	/!\ Execute la requête passée en argument que s'il s'agit d'un SELECT. /!\
 	*/
 		$i = 0;
-		$Ressource = pg_query($this->_Lien, $Requete);
+		try{
+			$Ressource = pg_query($this->_Lien, $Requete);
+		} catch (Exception $e) {
+			echo 'Exception reçue : ', $e->getMessage(), '\n';
+		}
 		$TabResultat = array();
-		if (!$Ressource)
+		if (!isset($Ressource))
 			return 0;
 		else
 		{
@@ -55,8 +59,12 @@ class Connexion {
     /*
     /!\ Execute la requête passée en argument que s'il s'agit d'un UPDATE, DELETE, INSERT. /!\
     */
-		$Ressource = pg_query($this->_Lien, $Requete);
-		if (!$Ressource)
+		try{
+			$Ressource = pg_query($this->_Lien, $Requete);
+		} catch (Exception $e) {
+			echo 'Exception reçue : ', $e->getMessage(), '\n';
+		}
+		if (!isset($Ressource))
 			return 0;
 		else
 		{

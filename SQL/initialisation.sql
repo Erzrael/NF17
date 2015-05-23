@@ -2,3 +2,4 @@
 
 \ir reset.sql
 \ir tables_vues.sql
+\ir donnees.sql

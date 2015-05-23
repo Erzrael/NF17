@@ -8,6 +8,13 @@ function ExistedUser($vLogin, $vConn){
 		return 1;
 }
 
+function ExistedPwd($MdP, $vConn){
+	$Resulats = $vConn->SelectSQL("SELECT motDePasse FROM Comptes WHERE motDePasse = '$MdP'");
+	if(!$Resulats)
+		return 0;
+	else
+		return 1;
+}
 /* Cette fonction vérifie que le MdP associé au Login est valide */
 function GoodPwd($vLogin, $vMdP, $vConn){
 	$Resulats = $vConn->SelectSQL("SELECT nomUtilisateur FROM Comptes WHERE nomUtilisateur = '$vLogin' AND motDePasse = '$vMdP'");

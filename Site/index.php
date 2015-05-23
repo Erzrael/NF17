@@ -1,3 +1,7 @@
+<?php
+	/* Démarrage de la session */
+	session_start();
+?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -16,26 +20,38 @@
 	     	<div class="jumbotron">
 				<h1>Page d'accueil test</h1>
 				<p>On peut mettre des liens vers toutes les pages ici, en attendant de faire une vraie page d'accueil et tout...</p>
-			</p> <a href="accueil.html"> Connexion </a> </p>
+			</p> <a href="comptes/inscription/creation.html"> Vous êtes nouveau ? </a> </p>
+			</p> <a href="comptes/connexion/connexion.html"> Vous avez déjà un compte ? </a> </p>
+			</p> <?php 
+					if(isset($_SESSION['user']) && isset($_SESSION['type'])){
+						echo '<a href="comptes/connexion/deconnexion.php"> Déconnexion </a>';
+					} ?>
+			</p>
 			</div>
 
 
 			<div class="page-header">
-				<h1>Test de PHP + connection à Postgres</h1>
+				<h1><?php 
+					if(isset($_SESSION['user']) && isset($_SESSION['type'])){
+						echo "Bienvenue cher ".$_SESSION['type']." ".$_SESSION['user'];
+					} else {
+						echo "Bienvenue utilisateur anonyme";
+					}
+				?></h1>
 			</div>
 			<p>
-				Extension Postgres 
+				Extension Postgres  <br/>
 
 				<?php				
 				include_once("classes/connexion.php");
 
 				$DB = new Connexion();
 
-				$Resulats = $DB->SelectSQL("SELECT prenom, nom FROM tEtudiant WHERE login='lraingev'");
+				$Resulats = $DB->SelectSQL("SELECT * FROM Comptes");
 				foreach ($Resulats as $Valeur)
 				{
-					echo $Valeur['prenom'];
-					echo $Valeur['nom'];
+					echo $Valeur['nomutilisateur'].'	';
+					echo $Valeur['motdepasse'].'<br/>';
 				}
 
 				$DB->close();
